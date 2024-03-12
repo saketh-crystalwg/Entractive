@@ -52,7 +52,7 @@ on a.customer_fk = f.customer_fk \
 where d.id = 75 \
 and f.30_dpst_date is null",con = connection)
 
-Entractive_2['Brand Name'] = ['PLAYDINGO' if x == 'PDIN' \
+Entractive_2['brand_name'] = ['PLAYDINGO' if x == 'PDIN' \
                                   else x for x in Entractive_2['brand_name']]
 
 Entractive_2['SMS Consent'] = ['TRUE' if x == 1 \
@@ -63,7 +63,7 @@ Entractive_2['Email Consent'] = ['TRUE' if x == 1 \
 
 Entractive_2.rename(columns={'referral_info': 'Affiliate Info'}, inplace=True)
 
-Entractive_2 = Entractive_2[['Brand Name','customer_id','Affiliate Info','first_name','last_name','user_name','email','phone','city',\
+Entractive_2 = Entractive_2[['brand_name','customer_id','Affiliate Info','first_name','last_name','user_name','email','phone','city',\
              'country_iso_code','registration_date','last_dpst_date','Email Consent','SMS Consent']].reset_index(drop=True)
 
 Entractive_1 = pd.read_sql_query("with txn_base  as  ( \
@@ -96,7 +96,7 @@ Entractive_1['Email Consent'] = ['TRUE' if x == 1 \
 
 Entractive_1  = Entractive_1[['Brand Name','customer_id','Eligible','last_dpst_date','last_log_date','SMS Consent','Email Consent']].reset_index(drop=True)
 
-date = dt.datetime.today() - timedelta(1)
+date = dt.datetime.today()
 date_1 = date.strftime("%m-%d-%Y")
 
 filename = f'Entractive_{date_1}.xlsx'
