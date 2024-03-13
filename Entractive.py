@@ -58,13 +58,13 @@ Entractive_2['brand_name'] = ['PLAYDINGO' if x == 'PDIN' \
 Entractive_2['SMS Consent'] = ['TRUE' if x == 1 \
                                   else 'FALSE' for x in Entractive_2['sms_consent']]
 
-Entractive_2['Email Consent'] = ['TRUE' if x == 1 \
+Entractive_2['email_consent_1'] = ['TRUE' if x == 1 \
                                   else 'FALSE' for x in Entractive_2['email_consent']]
 
 Entractive_2.rename(columns={'referral_info': 'Affiliate Info'}, inplace=True)
 
 Entractive_2 = Entractive_2[['brand_name','customer_id','Affiliate Info','first_name','last_name','user_name','email','phone','city',\
-             'country_iso_code','registration_date','last_dpst_date','Email Consent','SMS Consent']].reset_index(drop=True)
+             'country_iso_code','registration_date','last_dpst_date','email_consent_1','SMS Consent']].reset_index(drop=True)
 
 Entractive_1 = pd.read_sql_query("with txn_base  as  ( \
 select customer_fk, max(date(c_date)) as last_dpst_date  from platform.customer_transactions ct \
@@ -83,18 +83,55 @@ inner join txn_base as d \
 on a.customer_fk = d.customer_fk \
 where b.country_fk = 75", con = connection)
 
-Entractive_1['Brand Name'] = ['PLAYDINGO' if x == 'PDIN' \
+Entractive_1['brand_name'] = ['PLAYDINGO' if x == 'PDIN' \
                                   else x for x in Entractive_1['brand_name']]
 
 Entractive_1['Eligible'] = Entractive_1['email'].str.contains('blocked').apply(lambda x: not x if x else True)
 
-Entractive_1['SMS Consent'] = ['TRUE' if x == 1 \
+Entractive_1['sms_consent_1'] = ['TRUE' if x == 1 \
                                   else 'FALSE' for x in Entractive_1['sms_consent']]
 
 Entractive_1['Email Consent'] = ['TRUE' if x == 1 \
                                   else 'FALSE' for x in Entractive_1['email_consent']]
 
-Entractive_1  = Entractive_1[['Brand Name','customer_id','Eligible','last_dpst_date','last_log_date','SMS Consent','Email Consent']].reset_index(drop=True)
+Entractive_1  = Entractive_1[['brand_name','customer_id','Eligible','last_dpst_date','last_log_date','sms_consent_1','Email Consent']].reset_index(drop=True)
+
+Entractive_3 = pd.read_sql_query("with txn_base  as  ( \
+select customer_fk, max(date(c_date)) as last_dpst_date  from platform.customer_transactions ct \
+where status in ('APPROVED','SUCCESSFUL') \
+and trx_type = 'DEPOSIT' \
+group by 1) \
+ \
+select c.name as brand_name, a.customer_fk as customer_id, a.referral_info, a.first_name, a.last_name, \
+b.login as user_name, email, a.phone,  city, d.country_iso_code, date(b.c_date) as registration_date, \
+a.accept_marketing_offer as email_consent, a.accept_marketing_offer_sms as sms_consent  \
+from  platform.customer_attributes as a \
+left join platform.customers  as b \
+on a.customer_fk = b.id \
+left join platform.merchants as c \
+on b.merchant_fk = c.id \
+left join platform.countries as d \
+on b.country_fk = d.id \
+left join txn_base as e \
+on e.customer_fk = a.customer_fk \
+where d.id = 75 \
+and c.id in (53,59) \
+and e.last_dpst_date is null", con = connection)
+
+Entractive_3['brand_name'] = ['PLAYDINGO' if x == 'PDIN' \
+                                  else x for x in Entractive_3['brand_name']]
+
+Entractive_3['SMS Consent'] = ['TRUE' if x == 1 \
+                                  else 'FALSE' for x in Entractive_3['sms_consent']]
+
+Entractive_3['Email Consent'] = ['TRUE' if x == 1 \
+                                  else 'FALSE' for x in Entractive_3['email_consent']]
+
+Entractive_3.rename(columns={'referral_info': 'Affiliate Info'}, inplace=True)
+
+Entractive_3 = Entractive_3[['brand_name','customer_id','Affiliate Info','first_name','last_name','user_name','email','phone','city',\
+             'country_iso_code','registration_date','Email Consent','SMS Consent']].reset_index(drop=True)
+
 
 date = dt.datetime.today()
 date_1 = date.strftime("%m-%d-%Y")
@@ -104,6 +141,7 @@ filename = f'Entractive_{date_1}.xlsx'
 with pd.ExcelWriter(filename) as writer:
     Entractive_1.reset_index(drop=True).to_excel(writer, sheet_name="Entractive_1", index=False)
     Entractive_2.reset_index(drop=True).to_excel(writer, sheet_name="Entractive_2", index=False)
+    Entractive_3.reset_index(drop=True).to_excel(writer, sheet_name="Entractive_Segment_2", index=False)
     
 sub = f'Entractive Summary - {date_1}'
 
