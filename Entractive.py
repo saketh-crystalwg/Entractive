@@ -185,3 +185,35 @@ with pd.ExcelWriter(filename) as writer:
     Entractive_2.reset_index(drop=True).to_excel(writer, sheet_name="Entractive_2_FI", index=False)
     Entractive_1_BR.reset_index(drop=True).to_excel(writer, sheet_name="Entractive_1_BR", index=False)
     Entractive_2_BR.reset_index(drop=True).to_excel(writer, sheet_name="Entractive_2_BR", index=False)
+
+
+sub = f'Entractive Summary - {date_1}'
+
+def send_mail(send_from, send_to, subject, text, server, port, username='', password=''):
+    msg = MIMEMultipart()
+    msg['From'] = send_from
+    msg['To'] = ', '.join(recipients)
+    msg['Date'] = formatdate(localtime=True)
+    msg['Subject'] = subject
+    msg.attach(MIMEText(text))
+
+    part = MIMEBase('application', "octet-stream")
+    part.set_payload(open(filename, "rb").read())
+    encoders.encode_base64(part)
+    part.add_header('Content-Disposition', f'attachment; filename={filename}')
+    msg.attach(part)
+
+    # context = ssl.SSLContext(ssl.PROTOCOL_SSLv3)
+    # SSL connection only working on Python 3+
+    smtp = smtplib.SMTP_SSL(server, port)
+    smtp.login(username, password)
+    smtp.sendmail(send_from, send_to, msg.as_string())
+    smtp.quit()
+
+
+subject = sub
+body = f"Hi,\n\n Attached contains list of customers for Entractive  Campaign Activity for {date_1}.\n\nThanks,\nSaketh"
+sender = "sakethg250@gmail.com"
+recipients = ["sakethg250@gmail.com","sebastian@crystalwg.com","saketh@crystalwg.com","alin@crystalwg.com"]
+password = "xjyb jsdl buri ylqr"
+send_mail(sender, recipients, subject, body, "smtp.gmail.com", 465, sender, password)
