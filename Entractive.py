@@ -75,10 +75,6 @@ email, phone, city, country_iso_code, registration_date, \
 ''  as last_dpst_date, email_consent,sms_consent from RND",con = connection)
 
 
-Entractive_2["email"] = Entractive_2["email"].apply(lambda x: x.decode('utf-8') if isinstance(x, bytes) else x)
-
-Entractive_2["user_name"] = Entractive_2["user_name"].apply(lambda x: x.decode('utf-8') if isinstance(x, bytes) else x)
-
 
 Entractive_2['brand_name'] = ['PLAYDINGO' if x == 'PDIN' \
                                   else x for x in Entractive_2['brand_name']]
@@ -129,10 +125,6 @@ union all \
  \
 select brand_name, customer_id, ''  as last_dpst_date, last_log_date, sms_consent, email_consent, email from RND", con = connection)
 
-Entractive_1["email"] = Entractive_1["email"].apply(lambda x: x.decode('utf-8') if isinstance(x, bytes) else x)
-
-Entractive_1['brand_name'] = ['PLAYDINGO' if x == 'PDIN' \
-                                  else x for x in Entractive_1['brand_name']]
 
 Entractive_1['Eligible'] = Entractive_1['email'].str.contains('blocked').apply(lambda x: not x if x else True)
 
@@ -197,9 +189,6 @@ select brand_name, customer_id,referral_info,first_name,last_name, user_name, \
 email, phone, city, country_iso_code, registration_date, \
 ''  as last_dpst_date, email_consent,sms_consent from RND", con = connection)
 
-Entractive_2_BR["email"] = Entractive_2_BR["email"].apply(lambda x: x.decode('utf-8') if isinstance(x, bytes) else x)
-
-Entractive_2_BR["user_name"] = Entractive_2_BR["user_name"].apply(lambda x: x.decode('utf-8') if isinstance(x, bytes) else x)
 
 Entractive_2_BR['brand_name'] = ['PLAYDINGO' if x == 'PDIN' \
                                   else x for x in Entractive_2_BR['brand_name']]
@@ -251,7 +240,6 @@ union all \
  \
 select brand_name, customer_id, ''  as last_dpst_date, last_log_date, sms_consent, email_consent, email from RND", con = connection)
 
-Entractive_1_BR["email"] = Entractive_1_BR["email"].apply(lambda x: x.decode('utf-8') if isinstance(x, bytes) else x)
 
 Entractive_1_BR['brand_name'] = ['PLAYDINGO' if x == 'PDIN' \
                                   else x for x in Entractive_1_BR['brand_name']]
